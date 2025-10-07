@@ -53,6 +53,8 @@ module "blog_alb" {
       protocol         = "HTTP"
       port             = 80
       target_type      = "instance"
+
+      create_attachment = false
     }
   }
 
@@ -71,10 +73,16 @@ module "autoscaling" {
 
 
   vpc_zone_identifier = module.blog.public_subnets
-  target_group_arns   = module.blog_alb.target_group_arns
   security_groups     = [module.blog_sc.security_group_id]
 
-  image_ami     = data.aws_ami.app_ami.id
+  traffic_source_attachments = {
+    ex-alb = {
+      traffic_source_identifier = module.blog_alb.target_groups["ex_instance"].arn
+      traffic_source_type       = "elbv2" # default
+    }
+  }
+
+  image_id     = data.aws_ami.app_ami.id
   instance_type = var.instance_type
 }
 
