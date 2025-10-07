@@ -72,7 +72,7 @@ module "autoscaling" {
   max_size = 2
 
 
-  vpc_zone_identifier = module.blog.public_subnets
+  vpc_zone_identifier = module.blog_vpc.public_subnets
   security_groups     = [module.blog_sc.security_group_id]
 
   traffic_source_attachments = {
